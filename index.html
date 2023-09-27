@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice régions</title>
+    <style>
+        form {
+            width: 50%;
+            text-align: center;
+        }
+        fieldset {
+            padding:1rem;
+        }
+    </style>
+</head>
+<body>
+    <form action="index.html">
+        <fieldset>
+            <legend>Seléction d'un departement avec affichage automatique de la région - AJAX</legend>
+            <select name="departement" id="departement"></select>
+            <select name="region" id="region" disabled="disabled"></select>
+        </fieldset>
+    </form>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() 
+        {
+            //Récupération des données du fichier JSON
+            $.getJSON('ajax_regions.json', function(response) {
+                //console.log(response);
+                console.log(response['departements']);
+                response['departements'].forEach(element => {
+                        //Je remplis mon select avec chaques départements
+                        $('#departement').append('<option value="'+element.dep_id+'">'+element.dep_nom+'</option>')
+                });
+                //Affichage console de la liste des régions
+                console.log(response['regions']);
+
+                //Initilisation d'un champ par défaut région
+                $('#region').append('<option value="0" selected>Veuillez selectionner un département</option>')
+                response['regions'].forEach(element => {
+                    //Je remplis mon select avec chaques régions
+                    $('#region').append('<option value="'+element.reg_id+'">'+element.reg_v_nom+'</option>')
+                });
+                //Event listener sur le changement du département
+                $("#departement").on("change", function() {
+                    if(element.reg_id == $('#departement').find(":selected").val()){
+                        $('#region').append('<option value="'+element.reg_id+'">'+element.reg_v_nom+'</option>')
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
