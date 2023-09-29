@@ -14,14 +14,17 @@
         fieldset {
             padding:1rem;
         }
+        #departement {
+            visibility:hidden;
+        }
     </style>
 </head>
 <body>
     <form action="index.html">
         <fieldset>
-            <legend><b>Seléction d'un departement avec affichage automatique de la région - AJAX</b></legend>
+            <legend><b>Seléction d'une région avec affichage des départements correspondants - AJAX</b></legend>
+            <select name="region" id="region"><option value="0" selected disabled hidden>Sélectionnez votre région</option></select>
             <select name="departement" id="departement"></select>
-            <select name="region" id="region" disabled="disabled"></select>
         </fieldset>
     </form>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,33 +35,33 @@
         {
             //Récupération des données du fichier JSON
             $.getJSON('ajax_regions.json', function(response) {
-                
-                //Listage de tous les départements dans une boucle
-                response['departements'].forEach(element => {
-                        //Je remplis mon select avec chaques départements
-                        $('#departement').append('<option value="'+element.dep_reg_id+'">'+element.dep_nom+'</option>')
-                });
 
                 //Affichage console de la liste des régions
                 console.log(response['regions']);
 
-                //Listage de toutes les régions dans une boucle
-                response['regions'].forEach(element => {
-                    //Je remplis mon select avec chaques régions
-                    $('#region').append('<option value="'+element.reg_id+'">'+element.reg_v_nom+'</option>')
-                });
-
                 //Affichage console de la liste des départements
                 console.log(response['departements']);
+                
+                //Listage de toutes les régions dans une boucle
+                response['regions'].forEach(element => {
+                        //Je remplis mon select avec chaques départements
+                        $('#region').append('<option value="'+element.reg_id+'">'+element.reg_v_nom+'</option>')
+                });
 
-                //J'initialise le champ région sur la valeur correspondant au département selectionné au chargement de la page
-                var index_dep = $('#departement').find(":selected").val();
-                $('#region').val(index_dep).change(); 
-
-                //Event listener sur le changement du département
-                $("#departement").on("change", function() {
-                    var index_dep = $('#departement').find(":selected").val();
-                    $('#region').val(index_dep).change();  
+                //Event listener sur le changement de la région
+                $("#region").on("change", function() {
+                    //Je stock la valeur région séléctionnée
+                    var index_reg = $('#region').find(":selected").val();
+                    //Je nettoie le select option departements
+                    $("#departement").empty();
+                    response['departements'].forEach(element => {
+                        if(element.dep_reg_id == index_reg){
+                            $('#departement').append('<option value="'+element.dep_id+'">'+element.dep_nom+'</option>');
+                        }
+                    });
+                    if($("#departement").css("visibility") == "hidden"){
+                        $("#departement").css("visibility", "visible"); 
+                    }
                 });
             });
         });
